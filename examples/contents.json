@@ -1,0 +1,8 @@
+{
+  "content-id" : "<value>",
+  "content-encryption-key" : "<value>",
+  "protected-content-location" : "<value>",
+  "protected-content-length" : "<value>",
+  "protected-content-sha256" : "<value>",
+  "protected-content-disposition" : "<value>"
+}

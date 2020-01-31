@@ -1,0 +1,72 @@
+#%RAML 1.0
+title: LCP License Server
+baseUri: http://localhost:8989
+types:
+  Content: !include types/content.raml
+  PartialLicense: !include types/partial-license.raml
+
+/contents:
+  /{content-id}:
+    description: Contents
+    get:
+      description: This method fetches the encrypted publication stored by the License Server
+      responses:
+        200:
+          description: Content found
+        404:
+          description: File not found
+        500:
+          description: Internal server error
+    put:
+      description: Store the data resulting from an external encryption
+      body:
+        application/json:
+          type: Content
+          example: !include examples/contents.json
+      responses:
+        200:
+          description: content found (OK: file updated and db updated )
+        201:
+          description: the content was added (created)
+        400:
+          description: bad request (File not saved)
+        401:
+          description: unauthorized
+        404:
+          description: not found
+        500:
+          description: Internal server error
+    /license:
+      post:
+        description: Generate a license
+        body:
+          application/json:
+            type: PartialLicense
+            example: !include examples/partial-license.json
+    /publication:
+      post:
+        description: Generate a licensed publication
+        body:
+          application/json:
+            type: PartialLicense
+            example: !include examples/partial-license.json
+    /licenses:
+      get:
+        description: This method returns a sequence of partial licenses, in ante-chronological order (on date of issue).        
+/licenses:
+  # description: Licenses
+  /:
+    description: This method returns a sequence of partial licenses, in ante-chronological order (on date of issue).
+  /{license_id}:
+    post:
+      description: This method returns a license, using its identifier as key.
+    patch:
+      description: |
+        This method can force the update of the information stored in the License Server database, I.e.
+        The license provider
+        The user identifier
+        the rights associated with a license
+        It is usually called from the License Status server (for lending return or renewal), and in this case only contains a rights object.
+    /publication:
+      description: This method returns a licensed publication, using its license identifier as key.
+      post:

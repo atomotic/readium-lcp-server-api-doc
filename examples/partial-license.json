@@ -1,0 +1,22 @@
+{
+    "provider": "https://lcp.dev.medialibrary.it",
+    "user": {
+        "id": "67E97749-0B8D-466B-BA91-4E7163F023D9",
+        "email": "raffaele@example.com",
+        "encrypted": [
+            "email"
+        ]
+    },
+    "encryption": {
+        "user_key": {
+            "text_hint": "favourite beer",
+            "hex_value": "0cf7283b17dd99bd946c13f82ddb138f7316d7d9e9622403ed66329b47b9e130"
+        }
+    },
+    "rights": {
+        "print": 10,
+        "copy": 2048,
+        "start": "2020-01-01T01:08:15+01:00",
+        "end": "2020-02-10T01:08:15+01:00"
+    }
+}

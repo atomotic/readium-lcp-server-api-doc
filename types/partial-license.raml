@@ -1,0 +1,39 @@
+#%RAML 1.0 ObjectTypeDeclaration
+type: object
+properties:
+    provider:
+        type: string
+        required: true
+    user:
+      type: object
+      properties:
+        id:
+          type: string
+          required: true
+        email:
+          type: string
+        encrypted:
+          type: array
+    encryption:
+      type: object
+      properties: 
+        user_key:
+          type: object
+          properties:
+            text_hint:
+              type: string
+              required: true
+            hex_value:
+              type: string
+              required: true
+    rights:
+      type: object
+      properties:
+        print:
+          type: integer
+        copy:
+          type: integer
+        start:
+          type: datetime
+        end:
+          type: datetime
