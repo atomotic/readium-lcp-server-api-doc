@@ -6,9 +6,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [16.x]
@@ -20,26 +18,14 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm install -g raml2html
-    - run: mkdir build
-    - run: ./node_modules/.bin/raml2html lcp.raml > build/lcp.html
-
-
-    - name: Commit files
-      id: commit
+    - name: Install HTML generator
+        run: npm i -g raml2html
+    - name: Generate docs
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "github-actions"
-        git add --all
-        if [-z "$(git status --porcelain)"]; then
-           echo "::set-output name=push::false"
-        else
-           git commit -m "Add changes" -a
-           echo "::set-output name=push::true"
-        fi
-      shell: bash
-    - name: Push changes
-      if: steps.commit.outputs.push == 'true'
-      uses: ad-m/github-push-action@master
-      with:
-         github_token: ${{ secrets.GITHUB_TOKEN }}
+        mkdir build
+        raml2html -i docs/api/v1.raml -o build/index.html
+    - uses: s0/git-publish-subdir-action@v2.4.0
+        env:
+          REPO: self
+          FOLDER: build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
