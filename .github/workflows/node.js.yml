@@ -2,7 +2,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
@@ -12,20 +12,22 @@ jobs:
         node-version: [16.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: Install HTML generator
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: install raml2html
         run: npm i -g raml2html
-    - name: Generate docs
-      run: |
-        mkdir build
-        raml2html -i docs/api/v1.raml -o build/index.html
-    - uses: s0/git-publish-subdir-action@v2.4.0
+      - name: build
+        run: |
+          mkdir build
+          raml2html -i docs/api/v1.raml -o build/index.html
+      - name: commit
+        uses: s0/git-publish-subdir-action@v2.4.0
         env:
           REPO: self
+          BRANCH: gh-pages
           FOLDER: build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
