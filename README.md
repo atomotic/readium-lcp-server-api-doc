@@ -1,8 +1,7 @@
 # READIUM-LCP-SERVER 
 # API Documentation (wip, incomplete)
 
-https://github.com/atomotic/readium-lcp-server-api-doc
-
+https://atomotic.github.io/readium-lcp-server-api-doc/
 
 # Build 
 
