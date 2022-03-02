@@ -21,7 +21,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install -g raml2html
-    - run: raml2html lcp.raml > build/lcp.html
+    - run: mkdir build
+    - run: ./node_modules/.bin/raml2html lcp.raml > build/lcp.html
 
 
     - name: Commit files
