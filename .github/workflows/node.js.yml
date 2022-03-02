@@ -23,7 +23,7 @@ jobs:
       - name: build
         run: |
           mkdir build
-          raml2html -i docs/api/v1.raml -o build/index.html
+          raml2html -i lcp.raml -o build/index.html
       - name: commit
         uses: s0/git-publish-subdir-action@v2.4.0
         env:
