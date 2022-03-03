@@ -18,7 +18,6 @@ jobs:
         run: npm i -g raml2html
       - name: build
         run: |
-          mkdir build
           raml2html -i lcp.raml -o build/lcp.html
           raml2html -i lsd.raml -o build/lsd.html
       - name: commit
