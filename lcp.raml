@@ -2,7 +2,7 @@
 title: LCP License Server
 baseUri: http://localhost:8989
 types:
-  Content: !include types/content.raml
+  EncryptedPublication: !include types/encryptedpublication.raml
   PartialLicense: !include types/partial-license.raml
 
 /contents:
@@ -21,7 +21,7 @@ types:
       description: Store the data resulting from an external encryption
       body:
         application/json:
-          type: Content
+          type: EncryptedPublication
           example: !include examples/contents.json
       responses:
         200:

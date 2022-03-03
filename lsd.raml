@@ -2,30 +2,179 @@
 title: LCP License Status Server
 baseUri: http://localhost:8990
 types:
-  Content: !include types/content.raml
+  License: !include types/license.raml
   PartialLicense: !include types/partial-license.raml
 
 /licenses:
   /:
     get:
-      description: This method returns a sequence of license statuses, in their id order.
+      description: |
+        This method returns a sequence of license statuses, in their id order.
+
+        It is used to filter the licenses that have been used by a large number of devices. 
+      queryParameters:
+        devices:
+          description: minimum number of devices
+          type: int
+          required: false
+        page:
+          description: pagination
+          type: int
+          required: false
+        per_page:
+          description: pagination
+          type: int
+          required: false  
+      responses:
+        200:
+          description: the requested array of partial licenses: ok
+        401:
+          description: unauthorized
+        400:
+          description: bad request; the devices boundary or pagination parameters are wrong
+        5xx:
+          description: internal error
+
     put:
-      description: This method is called by the License Server after generation of a license. The complete license is provided as a payload; the Status Server then extracts the information it needs from the license structure. 
+      description: |
+        Notify of a new license
+        
+        This method is called by the License Server after generation of a license. 
+        The complete license is provided as a payload; the Status Server then extracts 
+        the information it needs from the license structure. 
+      body:
+        application/json:
+          type: License
+      responses:
+        201:
+          description: created
+        400:
+          description: (bad request) The license structure is malformed.
+        5xx:
+          description: internal error
   /{license_id}/status:
     get:
-      description: The method generates and returns a license status document, using a license identifier as key.
+      description: |
+      Return a license status document
+
+      The method generates and returns a license status document, using a license identifier as key.
+      responses:
+        200:
+          description: the requested license status: ok
+        404:
+          description: (not found) This license does not exist in the database
+    patch:
+      description: |
+        Revoke/cancel a license
+
+        This methods revokes (after use) or cancels (before use) a license by sending a partial license status document, 
+        containing the new status and a message indicating why the status is being changed
+      responses:
+        200:
+          description: ok
+        400:
+          description: (bad request) The new status is not compatible with current status
+        401:
+          description: unauthorized
+        404:
+          description: (not found) This license does not exist in the database
+        5xx:
+          description: internal error
   /{license_id}/register:
     post: 
       description: |
-       Activate a device for a given license.
-       Any certified device MUST call this method the first time it processes an LCP license, and SHOULD store a positive answer.
+        Process a device registration
+        
+        Activate a device for a given license.
+        Any certified device MUST call this method the first time it processes an LCP license, and SHOULD store a positive answer.
+      queryParameters:
+        id:
+          description: the device identifier in the form of a UUID
+          required: false
+        name:
+          description: the device name in the form of a URL-encoded string
+          required: false
+      responses:
+        200: 
+          description: the updated license status: ok
+        400: 
+          description: |
+            (bad request) Your device could not be registered properly
+            Probable causes:
+              The license has been revoked
+              The identifier is badly formatted
+              The name is too long
+        404: 
+          description: (not found) This license does not exist in the database
+        500: 
+          description: (internal error) An unexpected error has occurred.
   /{license_id}/return:
     put:
       description: |
-        The method checks that the calling device is activated, then modifies the end date associated with the given license; it will be set to “now”. This method calls the “rights” method of the LCP server.
+        Process a lending return
+
+        The method checks that the calling device is activated, then modifies the end date associated with the given license; 
+        it will be set to “now”. This method calls the “rights” method of the LCP server.
+      queryParameters:
+        id:
+          description: the device identifier in the form of a UUID
+          required: false
+        name:
+          description: the device name in the form of a URL-encoded string
+          required: false
+      responses:
+        200:
+          description: the updated license status: ok
+        400:
+          description: (bad request) Your publication could not be returned properly
+        403:
+          description: (rejected) Your publication has already been returned before.
+        403:
+          description: (rejected) Your publication has already expired
+        404:
+          description: (not found) This license does not exist in the database
+        500:
+          description: (internal error) An unexpected error has occurred  
   /{license_id}/renew:
     put:
-      description: The method checks that the calling device is activated, then modifies the end date associated with the license.This method call the “rights” method of the LCP server.
+      description: |
+      Process a lending renewal
+
+      The method checks that the calling device is activated, then modifies the end date associated with the license.
+      This method call the “rights” method of the LCP server.
+      queryParameters:
+        id:
+          description: the device identifier in the form of a UUID
+          required: false
+        name:
+          description: the device name in the form of a URL-encoded string
+          required: false
+        end:
+          description: the requested end date and time, in the form of a W3C date-time (YYYY-MM-DDThh:mm:ssTZD)
+          required: false
+        responses:
+          200:
+            description: the updated license status: ok
+          400:
+            description: (bad request) Your publication could not be renewed properly
+          403:
+            description: (rejected) Incorrect renewal period, your publication could not be renewed
+          404:
+            description: (not found) This license does not exist in the database
+          500:
+            description: (internal error) An unexpected error has occurred  
   /{license_id}/registered:
     get:
-      description: Gives data to the provider (and publisher) about the use of a given license.
+      description: |
+        List all registered devices for a given license
+
+        Gives data to the provider (and publisher) about the use of a given license.
+      responses:
+          200:
+            description: {license-id, [{device-id, device-name, date-time}]} (json): ok
+          401:
+            description: unauthorized
+          404:
+            description: (not found) This license does not exist in the database
+          500:
+            description: (internal error)
