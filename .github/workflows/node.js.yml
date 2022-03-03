@@ -14,7 +14,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16
-          cache: "npm"
       - name: install raml2html
         run: npm i -g raml2html
       - name: build
