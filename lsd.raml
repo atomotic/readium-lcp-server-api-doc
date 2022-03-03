@@ -1,0 +1,31 @@
+#%RAML 1.0
+title: LCP License Status Server
+baseUri: http://localhost:8990
+types:
+  Content: !include types/content.raml
+  PartialLicense: !include types/partial-license.raml
+
+/licenses:
+  /:
+    get:
+      description: This method returns a sequence of license statuses, in their id order.
+    put:
+      description: This method is called by the License Server after generation of a license. The complete license is provided as a payload; the Status Server then extracts the information it needs from the license structure. 
+  /{license_id}/status:
+    get:
+      description: The method generates and returns a license status document, using a license identifier as key.
+  /{license_id}/register:
+    post: 
+      description: |
+       Activate a device for a given license.
+       Any certified device MUST call this method the first time it processes an LCP license, and SHOULD store a positive answer.
+  /{license_id}/return:
+    put:
+      description: |
+        The method checks that the calling device is activated, then modifies the end date associated with the given license; it will be set to “now”. This method calls the “rights” method of the LCP server.
+  /{license_id}/renew:
+    put:
+      description: The method checks that the calling device is activated, then modifies the end date associated with the license.This method call the “rights” method of the LCP server.
+  /{license_id}/registered:
+    get:
+      description: Gives data to the provider (and publisher) about the use of a given license.

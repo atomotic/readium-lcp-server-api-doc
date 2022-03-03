@@ -7,23 +7,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: setup node
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 16
           cache: "npm"
       - name: install raml2html
         run: npm i -g raml2html
       - name: build
         run: |
           mkdir build
-          raml2html -i lcp.raml -o build/index.html
+          raml2html -i lcp.raml -o build/lcp.html
+          raml2html -i lsd.raml -o build/lsd.html
       - name: commit
         uses: s0/git-publish-subdir-action@v2.4.0
         env:
